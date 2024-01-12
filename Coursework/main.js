@@ -19,12 +19,13 @@ class Demo {
 
         this.initalizeRenderer();
         this.initalizeCamera();
+        this.initalizeMeshMats();
         this.initalizeScene();
         this.initalizeWorld();
 
         this.initalizePlayer();
 
-        this.initalizeMats();
+        this.initalizeBodyMats();
         this.initalizeLights();
         this.initalizeMap();
 
@@ -73,7 +74,18 @@ class Demo {
         });
     }
 
-    initalizeMats() {
+    initalizeMeshMats() {
+        this.leatherTex1 = this.maker.loadMaterial('leather_8', 'Leather_008_', 'jpg', 1, 1, 'standard');
+        this.plasticTex1 = this.maker.loadMaterial('plastic_scratched', 'plastic_0010_', 'png', 1, 1, 'standard');
+        this.plasticTex2 = this.maker.loadMaterial('plastic_scratched_2', 'Scratched plastic_', 'jpg', 1, 1, 'standard');
+        this.stoneTex1 = this.maker.loadMaterial('wall_stone_22', 'Wall_Stone_022_', 'jpg', 2, 2, 'standard');
+        this.ropeTex1 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 4.9, 'standard');
+        this.tilesTex1 = this.maker.loadMaterial('floor_tiles_06_4k', 'floor_tiles_06_','png', 50,50, 'standard');
+        this.woodTex1 = this.maker.loadMaterial('wood_floor_worn_4k.blend', 'wood_floor_worn_', 'png', 8,6, 'standard');
+        this.tilesTex2 = this.maker.loadMaterial('freepbr', 'vintage-tile1_', 'png', 1, 1.25,'standard');
+    }
+
+    initalizeBodyMats() {
         this.wallMaterial = new CANNON.Material();
         const wallPlayerContactMat = new CANNON.ContactMaterial(
             this.wallMaterial,
@@ -180,18 +192,18 @@ class Demo {
         // Walls
         const [wallMesh1, wallBody1] = this.maker.makeStoneWall(new THREE.Vector3(12.5,5,72.5), 
                                             new THREE.Vector3(5, 10, 25), 
-                                            2, 2, this.wallMaterial );
+                                            this.stoneTex1, this.wallMaterial );
         this.scene.add(wallMesh1);
         this.world.addBody(wallBody1);
         
         const [wallMesh2, wallBody2] = this.maker.makeStoneWall(new THREE.Vector3(12.5,5,72.5), 
                                             new THREE.Vector3(5, 10, 25), 
-                                            2, 2, this.wallMaterial);
+                                            this.stoneTex1, this.wallMaterial);
         this.scene.add(wallMesh2);
         this.world.addBody(wallBody2);
 
         // Raised ground
-        const tileMaterial = this.maker.loadMaterial('floor_tiles_06_4k', 'floor_tiles_06_','png', 50,50, 'standard');
+        const tileMaterial = this.tilesTex1
         const tileMesh = new THREE.Mesh(
             new THREE.BoxGeometry(100, 0.5, 80),
             tileMaterial
@@ -211,7 +223,7 @@ class Demo {
 
         // Ramp
 
-        const ramp = this.maker.makeRamp(2,5,5, new THREE.Vector3(10,0.25,0), 0.6, this.wallMaterial);
+        const ramp = this.maker.makeRamp(2,5,5, new THREE.Vector3(10,0.25,0), 0.6, this.leatherTex1, this.wallMaterial);
         this.scene.add(ramp[0]);
         this.world.addBody(ramp[1]);
         
@@ -222,96 +234,105 @@ class Demo {
         const blocks = []
 
         // Plastic
-        let block = this.maker.makeStaticBox("plastic", 
+        let block = this.maker.makeTexturedBox(
                 new THREE.Vector3(15,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0xff002f),
-                this.wallMaterial);
-        blocks.push(block);
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("plastic", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(10,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0xffef0f),
-                this.wallMaterial);
-        blocks.push(block);
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("plastic", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(5,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0x3d91ff),
-                this.wallMaterial);
-        blocks.push(block);
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("plastic", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(0,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0xff002f),
-                this.wallMaterial);
-        blocks.push(block);
+                this.plasticTex2,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("plastic2", 
+        block = this.maker.makeTexturedBox(
                 new THREE.Vector3(-5,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0xffef0f),
-                this.wallMaterial);
-        blocks.push(block);
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("plastic", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(-10,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0x3d91ff),
-                this.wallMaterial);
-        blocks.push(block);
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("leather", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(-12-1.75,1.25,-5),
                 new THREE.Vector3(2.5,6,5),
                 new THREE.Color(0xff002f),
-                this.wallMaterial);
-        blocks.push(block);
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("leather", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(-15-1.25,1.25,-5),
                 new THREE.Vector3(2.5,10,5),
                 new THREE.Color(0xffef0f),
-                this.wallMaterial);
-        blocks.push(block);
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
-        block = this.maker.makeStaticBox("leather", 
+        block = this.maker.makeTexturedBox( 
                 new THREE.Vector3(-18.75,1.25,-5),
                 new THREE.Vector3(2.5,14,5),
                 new THREE.Color(0x3d91ff),
-                this.wallMaterial);
-        blocks.push(block);
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
 
         let ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(5, 4, -2.49),
                 new THREE.Vector2(5,7),
-                3.5,4.9, this.wallMaterial
-        );
-        blocks.push(ropewall);
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
 
         ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(0, 4, -2.49),
                 new THREE.Vector2(5,7),
-                3.5,4.9, this.wallMaterial 
-        );
-        blocks.push(ropewall);
+                this.ropeTex1,
+                this.wallMaterial 
+        ); blocks.push(ropewall);
 
         ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(-5, 4, -2.49),
                 new THREE.Vector2(5,7),
-                3.5,4.9, this.wallMaterial
-        );
-        blocks.push(ropewall);
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
 
         ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(-10, 4, -2.49),
                 new THREE.Vector2(5,7),
-                3.5,4.9, this.wallMaterial
-        );
-        blocks.push(ropewall);
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
 
         for (let i=0; i<blocks.length; i++) {
             this.scene.add(blocks[i][0]);
@@ -328,7 +349,7 @@ class Demo {
     }
 
     makeFloor() {
-        const woodFloor = this.maker.loadMaterial('wood_floor_worn_4k.blend', 'wood_floor_worn_', 'png', 8,6, 'standard');
+        const woodFloor = this.woodTex1;
 
         const plane1Mesh = new THREE.Mesh(
             new THREE.PlaneGeometry(120, 120),
@@ -339,7 +360,7 @@ class Demo {
         this.scene.add(plane1Mesh);
         plane1Mesh.position.set(0,0,0);
 
-        const checkeredFloor = this.maker.loadMaterial('freepbr', 'vintage-tile1_', 'png', 1, 1.25,'standard');
+        const checkeredFloor = this.tilesTex2;
 
         const plane2Mesh = new THREE.Mesh(
             new THREE.PlaneGeometry(20, 25),
@@ -413,7 +434,7 @@ class Demo {
 
         const clothGeometry = new THREE.PlaneGeometry(1, 1, Nx, Ny);
 
-        const clothMat = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 1,1, 'standard');
+        const clothMat = this.ropeTex1.clone();
         clothMat.transparent = true;
         clothMat.side = THREE.DoubleSide;
 
@@ -438,7 +459,7 @@ class Demo {
     }
 
     makeBox() {
-        const boxMaterial = this.maker.loadMaterial('leather_8', 'Leather_008_', 'jpg', 1, 1, 'standard');
+        const boxMaterial = this.leatherTex1.clone();
         boxMaterial.transparent = false;
         boxMaterial.color.set(new THREE.Color(0xff002f));
         this.boxMesh = new THREE.Mesh(

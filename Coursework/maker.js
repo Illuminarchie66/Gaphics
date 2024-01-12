@@ -94,126 +94,28 @@ class Maker {
         return material;
     }
 
-    loadMaterial2(texture, tilingX, tilingY, materialType) {
-        let d={};
-        if (texture.albedo) {
-            const albedo = texture.albedo.clone();
-            albedo.anisotropy = this.maxAnisotropy;
-            albedo.wrapS = THREE.RepeatWrapping;
-            albedo.wrapT = THREE.RepeatWrapping;
-            albedo.repeat.set(tilingX, tilingY);
-            d.map = albedo;
-        }
-        
-        if (texture.metalMap) {
-            const metalMap = texture.metalMap.clone();
-            metalMap.anisotropy = this.maxAnisotropy;
-            metalMap.wrapS = THREE.RepeatWrapping;
-            metalMap.wrapT = THREE.RepeatWrapping;
-            metalMap.repeat.set(tilingX, tilingY);
-            d.metalnessMap = metalMap;
-        }
-
-        if (texture.normalMap) {
-            const normalMap = texture.normalMap.clone();
-            normalMap.anisotropy = this.maxAnisotropy;
-            normalMap.wrapS = THREE.RepeatWrapping;
-            normalMap.wrapT = THREE.RepeatWrapping;
-            normalMap.repeat.set(tilingX, tilingY);
-            d.normalMap = normalMap;
-        }
-
-        if (texture.roughnessMap) {
-            const roughnessMap = texture.roughnessMap.clone();
-            roughnessMap.anisotropy = this.maxAnisotropy;
-            roughnessMap.wrapS = THREE.RepeatWrapping;
-            roughnessMap.wrapT = THREE.RepeatWrapping;
-            roughnessMap.repeat.set(tilingX, tilingY);
-            d.roughnessMap = roughnessMap;
-        }
-
-        if (texture.aoMap) {
-            const aoMap = texture.aoMap.clone();
-            aoMap.anisotropy = this.maxAnisotropy;
-            aoMap.wrapS = THREE.RepeatWrapping;
-            aoMap.wrapT = THREE.RepeatWrapping;
-            aoMap.repeat.set(tilingX, tilingY);
-            d.aoMap = aoMap;
-        }
-
-        if (texture.bumpMap) {
-            const bumpMap = texture.bumpMap.clone();
-            bumpMap.anisotropy = this.maxAnisotropy;
-            bumpMap.wrapS = THREE.RepeatWrapping;
-            bumpMap.wrapT = THREE.RepeatWrapping;
-            bumpMap.repeat.set(tilingX, tilingY);
-            d.bumpMap = bumpMap;
-        }
-
-        if (texture.opacityMap) {
-            const opacityMap = texture.opacityMap.clone();
-            opacityMap.anisotropy = this.maxAnisotropy;
-            opacityMap.wrapS = THREE.RepeatWrapping;
-            opacityMap.wrapT = THREE.RepeatWrapping;
-            opacityMap.repeat.set(tilingX, tilingY);
-            d.alphaMap = opacityMap;
-        }
-
-        if (texture.reflectionMap) {
-            const reflectionMap = texture.reflectionMap.clone();
-            reflectionMap.anisotropy = this.maxAnisotropy;
-            reflectionMap.wrapS = THREE.RepeatWrapping;
-            reflectionMap.wrapT = THREE.RepeatWrapping;
-            reflectionMap.repeat.set(tilingX, tilingY);
-            d.envMap = reflectionMap;
-        }
-
-        let material;
-        if (materialType == 'standard') {
-            material = new THREE.MeshStandardMaterial(d);
-        } else if (materialType == 'phong') {
-            material = new THREE.MeshPhongMaterial(d);
-        }
-
-        return material;
-    }
-
-    makeStaticBox(type, position, scale, color, materialBody) {
-        if (type == "leather") {
-            return this.makeTexturedBox('leather_8', 'Leather_008_', 'jpg', 1, 1, position, scale, color, materialBody);
-        } else if (type == "plastic") {
-            //rgb: 39, 116, 196
-            return this.makeTexturedBox('plastic_scratched', 'plastic_0010_', 'png', 1, 1, position, scale, color, materialBody);
-        } else if (type == "plastic2") {
-            return this.makeTexturedBox('plastic_scratched_2', 'Scratched plastic_', 'jpg', 1, 1, position, scale, color, materialBody);
-        }
-
-        //216, 139, 196
-    }
-
-    makeTexturedBox(dir, name, type, tilingX, tilingY, position, scale, color, materialBody) {
-        const boxMaterial = this.loadMaterial(dir, name, type, tilingX, tilingY, 'standard');
-        boxMaterial.color.set(color);
+    makeTexturedBox(position, scale, color, materialMesh, materialBody) {
+        const boxMaterial = materialMesh.clone();
         const boxMesh = new THREE.Mesh(
             new THREE.BoxGeometry(scale.x, scale.y, scale.z),
             boxMaterial,
         );
         boxMesh.castShadow = true;
         boxMesh.receiveShadow = true;
+        boxMesh.material.color.set(color);
         boxMesh.position.copy(position);
 
         const boxBody = new CANNON.Body({
             shape: new CANNON.Box(new CANNON.Vec3(scale.x/2,scale.y/2,scale.z/2)),
             mass: 0,
-            position: new CANNON.Vec3(0, 20, -30),
+            position: new CANNON.Vec3(position.x, position.y, position.z),
             material: materialBody,
         });
-        boxBody.position.copy(position);
         
         return [boxMesh, boxBody];
     }
 
-    makeRamp(height, width, depth, position, thatConstant, materialBody) {
+    makeRamp(height, width, depth, position, thatConstant, materialMesh, materialBody) {
         const vertices = [
             new THREE.Vector2(0, 0),
             new THREE.Vector2(width, 0),
@@ -221,7 +123,7 @@ class Maker {
         ];
         
         const prismGeometry = new PrismGeometry(vertices, depth);
-        const rampMaterial = this.loadMaterial('leather_8', 'Leather_008_', 'jpg', 1, 2, 'standard');
+        const rampMaterial = materialMesh.clone();
         rampMaterial.color.set(new THREE.Color(0xff002f));
         
         const ramp = new THREE.Mesh(prismGeometry, rampMaterial);
@@ -245,8 +147,8 @@ class Maker {
         return [ramp, rampBody];
     }
 
-    makeStoneWall(position, scale, tilingX, tilingY, materialBody) {
-        const texturedMaterial = this.loadMaterial('wall_stone_22', 'Wall_Stone_022_', 'jpg', tilingX, tilingY, 'standard');
+    makeStoneWall(position, scale, materialMesh, materialBody) {
+        const texturedMaterial = materialMesh.clone();
         texturedMaterial.transparent = false;
         texturedMaterial.side = THREE.DoubleSide;
         texturedMaterial.shadowSide = THREE.FrontSide;
@@ -269,8 +171,8 @@ class Maker {
         return [wall, wallBody];
     }
 
-    makeRopeWall(position, scale, tilingX, tilingY, materialBody) {
-        const ropeMaterial = this.loadMaterial('ropetextures', 'Net_3_', 'png', tilingX, tilingY, 'phong');
+    makeRopeWall(position, scale, materialMesh, materialBody) {
+        const ropeMaterial = materialMesh.clone();
         ropeMaterial.color.set(0x000000);
         ropeMaterial.side = THREE.DoubleSide;
         ropeMaterial.shininess = 50;    
