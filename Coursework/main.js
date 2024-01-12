@@ -76,13 +76,20 @@ class Demo {
 
     initalizeMeshMats() {
         this.leatherTex1 = this.maker.loadMaterial('leather_8', 'Leather_008_', 'jpg', 1, 1, 'standard');
+
         this.plasticTex1 = this.maker.loadMaterial('plastic_scratched', 'plastic_0010_', 'png', 1, 1, 'standard');
         this.plasticTex2 = this.maker.loadMaterial('plastic_scratched_2', 'Scratched plastic_', 'jpg', 1, 1, 'standard');
+
         this.stoneTex1 = this.maker.loadMaterial('wall_stone_22', 'Wall_Stone_022_', 'jpg', 2, 2, 'standard');
+
         this.ropeTex1 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 4.9, 'standard');
+
         this.tilesTex1 = this.maker.loadMaterial('floor_tiles_06_4k', 'floor_tiles_06_','png', 50,50, 'standard');
-        this.woodTex1 = this.maker.loadMaterial('wood_floor_worn_4k.blend', 'wood_floor_worn_', 'png', 8,6, 'standard');
         this.tilesTex2 = this.maker.loadMaterial('freepbr', 'vintage-tile1_', 'png', 1, 1.25,'standard');
+
+        this.woodTex1 = this.maker.loadMaterial('wood_floor_worn_4k.blend', 'wood_floor_worn_', 'png', 8,6, 'standard');
+
+        this.foamTex1 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 1,1, 'standard');
     }
 
     initalizeBodyMats() {
