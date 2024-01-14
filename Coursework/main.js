@@ -36,7 +36,8 @@ class Demo {
     initalizeRenderer() {
         this.renderer = new THREE.WebGLRenderer({antialias: true});
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        //this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+		this.renderer.powerprefer
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.physicallyCorrectLights = true;
@@ -83,14 +84,16 @@ class Demo {
 
         this.stoneTex1 = this.maker.loadMaterial('wall_stone_22', 'Wall_Stone_022_', 'jpg', 2, 2, 'standard');
 
-        this.ropeTex1 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 4.9, 'phong');
-        this.ropeTex2 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 4.9, 3.5, 'phong');
-        this.ropeTex3 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 9.8, 'phong');
-        this.ropeTex4 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 5.145, 3.5, 'phong');
-        this.ropeTex5 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 7, 3.5, 'phong');
-        this.ropeTex6 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 3.85, 'phong');
-        this.ropeTex7 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 3.5, 'phong');
-        this.ropeTex8 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 7, 0.525, 'phong');
+        this.ropeTex1 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 3.5, 4.9, 'phong');
+        this.ropeTex2 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 4.9, 3.5, 'phong');
+        this.ropeTex3 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 3.5, 9.8, 'phong');
+        this.ropeTex4 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 5.145, 3.5, 'phong');
+        this.ropeTex5 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 7, 3.5, 'phong');
+        this.ropeTex6 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 3.5, 3.85, 'phong');
+        this.ropeTex7 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 3.5, 3.5, 'phong');
+        this.ropeTex8 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 7, 0.525, 'phong');
+		this.ropeTex9 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 5.25, 3.85, 'phong');
+		//this.ropeTex10 = this.maker.loadMaterial('ropetexsmall', 'Net_3_', 'png', 10.5, 3.85, 'phong');
 
         this.tilesTex1 = this.maker.loadMaterial('floor_tiles_06_4k', 'floor_tiles_06_','png', 50,50, 'standard');
         this.tilesTex2 = this.maker.loadMaterial('freepbr', 'vintage-tile1_', 'png', 1, 1.25,'standard');
@@ -104,6 +107,7 @@ class Demo {
         this.foamTex5 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 0.4,1.4, 'standard');
         this.foamTex6 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 1,1.5, 'standard');
         this.foamTex7 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 2,0.8, 'standard');
+		
     }
 
     initalizeBodyMats() {
@@ -114,6 +118,8 @@ class Demo {
             {friction: 0, restitution: 0}
         );
         this.world.addContactMaterial(wallPlayerContactMat);
+
+		this.ballMaterial = new CANNON.Material({friction: 0.5, restitution: 0.7});
     }
 
     initalizePlayer() {
@@ -125,14 +131,14 @@ class Demo {
             shape: playerShape,
             sleepSpeedLimit: 10,
         });
-        this.playerBody.position.set(10, 11.5, -12);
+        this.playerBody.position.set(-8, 1.5, 10);
         this.playerBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2);
         this.playerBody.angularFactor = new CANNON.Vec3(0,1,0);
         
         this.world.addBody(this.playerBody);
 
         this.playerControls = new Controls(this.camera, this.playerBody)
-        this.playerControls.getObject().position.set(20, 2, -12); 
+        this.playerControls.getObject().position.set(-8, 1.5, 10); 
         this.scene.add(this.playerControls.getObject());
 
         const instructions = document.getElementById('instructions');
@@ -267,6 +273,19 @@ class Demo {
         // Posts
         this.makePosts();
 
+		// Balls
+		this.ballList = [];
+		let ball;
+		const colors = [new THREE.Color(0x3d91ff), new THREE.Color(0xffef0f),  new THREE.Color(0xff002f)]
+		for (let i=0; i<5; i++) {
+			ball = this.maker.makeBall(new THREE.Vector3(20, 1, -15), 0.5, colors[i%3], 
+								new THREE.MeshPhongMaterial({shininess: 50}),
+								this.ballMaterial);
+			this.scene.add(ball[0]);
+			this.world.addBody(ball[1]);
+			this.ballList.push(ball);
+		}
+		
         // Tube
         const tube = this.maker.makeTube(
             new THREE.Vector3(-17.5,8.25+0.15,-21), 
@@ -706,6 +725,15 @@ class Demo {
             ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
         }
 
+        for (let i=0; i<8; i++) {
+			ropewall = this.maker.makeRopeWall(
+					new THREE.Vector3(-17.5+i*5, 16.25, -24.5),
+					new THREE.Vector2(5,5.5),
+					this.ropeTex6,
+					this.wallMaterial
+			); blocks.push(ropewall);
+        }
+
         ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(12.5, 11.75, -9.49),
                 new THREE.Vector2(10,5),
@@ -744,14 +772,14 @@ class Demo {
                     this.ropeTex6,
                     this.wallMaterial
             ); blocks.push(ropewall);
-
-            ropewall = this.maker.makeRopeWall(
-                    new THREE.Vector3(20+i*5, 16.25, -24.5),
-                    new THREE.Vector2(5,5.5),
-                    this.ropeTex6,
-                    this.wallMaterial
-            ); blocks.push(ropewall);
         }
+
+		ropewall = this.maker.makeRopeWall(
+				new THREE.Vector3(23.75, 16.25, -24.5),
+				new THREE.Vector2(7.5,5.5),
+				this.ropeTex9,
+				this.wallMaterial
+		); blocks.push(ropewall);
 
         ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(5, 11.75, -12+2.51),
@@ -766,6 +794,40 @@ class Demo {
                 this.ropeTex8,
                 this.wallMaterial
         ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeTriangleWall(
+                new THREE.Vector3(-7.5, 8.25, -2.5),
+                5,
+                [
+                    new THREE.Vector3(1, 0, 0),
+                    new THREE.Vector3(-1, 0, 0),
+                    new THREE.Vector3(-1, 1, 0)
+                ],
+                this.ropeTex5,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeTriangleWall(
+                new THREE.Vector3(-20, 8.25+5+3, -13.5),
+                3,
+                [
+                    new THREE.Vector3(0, -1, 11/3),
+                    new THREE.Vector3(0, -1, -11/3),
+                    new THREE.Vector3(0, 1, -11/3)
+                ],
+                this.ropeTex5,
+                this.wallMaterial
+        ); 
+        blocks.push(ropewall);
+
+		ropewall = this.maker.makeRopeWall(
+				new THREE.Vector3(27.51, 16.25, -17),
+				new THREE.Vector2(15,5.5),
+				this.ropeTex1,
+				this.wallMaterial
+		); blocks.push(ropewall);
+		ropewall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+		ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
 
         for (let i=0; i<blocks.length; i++) {
             this.scene.add(blocks[i][0]);
@@ -1366,7 +1428,6 @@ class Demo {
         post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
         this.scene.add(post);
 
-
     }
 
     makeFloor() {
@@ -1502,6 +1563,13 @@ class Demo {
         this.world.step(delta);
 
         console.log(this.playerBody.position);
+
+		for (let i=0; i<this.ballList.length; i++) {
+			this.ballList[i][0].position.copy(this.ballList[i][1].position);
+			this.ballList[i][0].quaternion.copy(this.ballList[i][1].quaternion);
+		}
+
+		console.log(this.ballList);
         
         //Merging the mesh and the physics
         // this.planeMesh.position.copy(this.planeBody.position);

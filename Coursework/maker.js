@@ -101,7 +101,7 @@ class Maker {
     }
 
     makeTexturedBox(position, scale, color, materialMesh, materialBody) {
-        const boxMaterial = materialMesh.clone();
+        const boxMaterial = materialMesh;
         const boxMesh = new THREE.Mesh(
             new THREE.BoxGeometry(scale.x, scale.y, scale.z),
             boxMaterial,
@@ -154,7 +154,7 @@ class Maker {
     }
 
     makeCylinder(position, height, radius, color, materialMesh) {
-        const cylinderMat = materialMesh.clone();
+        const cylinderMat = materialMesh;
         cylinderMat.color.set(color);
         const cylinderMesh = new THREE.Mesh(
             new THREE.CylinderGeometry(radius, radius, height, 32 ),
@@ -189,7 +189,7 @@ class Maker {
     }
 
     makeRopeWall(position, scale, materialMesh, materialBody) {
-        const ropeMaterial = materialMesh.clone();
+        const ropeMaterial = materialMesh;
         ropeMaterial.color.set(0x000000);
         ropeMaterial.side = THREE.DoubleSide;
         ropeMaterial.shininess = 50;    
@@ -283,7 +283,7 @@ class Maker {
     }
 
     makeFoamWall(position, scale, color, materialMesh, materialBody) {
-        const foamMaterial = materialMesh.clone();
+        const foamMaterial = materialMesh;
         foamMaterial.color.set(color);
         foamMaterial.side = THREE.DoubleSide;
         foamMaterial.shininess = 50;    
@@ -411,6 +411,19 @@ class Maker {
         body.push(tubeBody);
 
         return [tubeMesh, body];
+    }
+
+    makeBall(position, radius, color, materialMesh, materialBody) {
+        materialMesh.color.set(color);
+        const geometry = new THREE.SphereGeometry( radius, 32, 16 ); 
+        const sphere = new THREE.Mesh( geometry, materialMesh ); 
+        sphere.position.set(position.x, position.y, position.z);
+
+        const sphereShape = new CANNON.Sphere(radius/2)
+        const sphereBody = new CANNON.Body({ mass: 1, shape: sphereShape, material: materialBody })
+        sphereBody.position.set(new CANNON.Vec3(position.x, position.y, position.z));
+
+        return [sphere, sphereBody];
     }
 
 }
