@@ -218,6 +218,70 @@ class Maker {
         return [ropeMesh, ropeBody];
     }
 
+    makeTriangleWall(position, scale, v, materialMesh, materialBody) {
+        const ropeMaterial = materialMesh.clone();
+        ropeMaterial.color.set(0x000000);
+        ropeMaterial.side = THREE.DoubleSide;
+        ropeMaterial.shininess = 50;    
+        ropeMaterial.transparent = true;
+        // vertices[0].multiplyScalar(scale);
+        // vertices[1].multiplyScalar(scale);
+        // vertices[2].multiplyScalar(scale);
+
+        const invisMaterial = new THREE.MeshBasicMaterial({
+            transparent: true,
+            color: new THREE.Color(0x000000),
+            opacity: 0,
+        })
+
+        let vertices = new Float32Array([
+            7.5, 14.25, -9.5,    // vertex 1
+            17.5, 14.25, -9.5,     // vertex 2
+            17.5, 19.25, -9.5,      // vertex 3
+        ]);
+
+        vertices = new Float32Array([
+            position.x+v[0].x*scale, position.y+v[0].y*scale, position.z+v[0].z*scale,    // vertex 1
+            position.x+v[1].x*scale, position.y+v[1].y*scale, position.z+v[1].z*scale,     // vertex 2
+            position.x+v[2].x*scale, position.y+v[2].y*scale, position.z+v[2].z*scale,      // vertex 3
+        ]);
+
+        const uvs = new Float32Array([
+            0, 0,   // UV for Vertex 1
+            1, 0,   // UV for Vertex 2
+            1, 1    // UV for Vertex 3
+          ]);
+        
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+        const material = new THREE.MeshBasicMaterial({ color: 'red' });
+        const mesh = new THREE.Mesh(geometry, ropeMaterial);
+        // const ropeMesh = new THREE.Mesh(
+        //     new THREE.Triangle(                    
+        //         new THREE.Vector3(-0.5, 0, 0),
+        //         new THREE.Vector3(0.5, 0, 0),
+        //         new THREE.Vector3(0.5, 0.5, 0)),
+        //     new THREE.MeshNormalMaterial()
+        // );
+        // ropeMesh.castShadow = false;
+        // ropeMesh.receiveShadow = true;
+        // ropeMesh.position.set(position.x,position.y,position.z);
+
+        const scaleX = scale*Math.abs(v[1].x - v[0].x);
+        const scaleY = scale*Math.abs(v[2].y - v[1].y);
+        console.log(scaleX);
+        console.log(scaleY);
+        const ropeBody = new CANNON.Body({
+            shape: new CANNON.Box(new CANNON.Vec3(scaleX/2,scaleY/2,0.1)),
+            mass: 0,
+            position: new CANNON.Vec3(position.x, position.y, position.z),
+            material: materialBody,
+        });
+        
+        return [mesh, ropeBody];
+    }
+
     makeFoamWall(position, scale, color, materialMesh, materialBody) {
         const foamMaterial = materialMesh.clone();
         foamMaterial.color.set(color);
@@ -228,7 +292,7 @@ class Maker {
             new THREE.PlaneGeometry(scale.x,scale.y),
             foamMaterial
         );
-        foamMesh.castShadow = true;
+        foamMesh.castShadow = false;
         foamMesh.receiveShadow = true;
         foamMesh.position.set(position.x,position.y,position.z)
 
@@ -300,7 +364,7 @@ class Maker {
     makeTube(position, tubeLength, tubeRadius, color, materialMesh, materialBody) {
         const path = new THREE.LineCurve3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, tubeLength));
 
-        const tubeGeometry = new THREE.TubeGeometry(path, 10, tubeRadius);
+        const tubeGeometry = new THREE.TubeGeometry(path, 10, tubeRadius, 20);
 
         const material = materialMesh.clone()
         material.side = THREE.DoubleSide;

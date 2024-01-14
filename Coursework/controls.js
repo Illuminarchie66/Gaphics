@@ -204,7 +204,7 @@ class Controls extends THREE.EventDispatcher {
         this.cannonBody.velocity.x *= this.dampingFactor;
         this.cannonBody.velocity.z *= this.dampingFactor;
 
-        this.cannonBody.position.y = Math.round(this.cannonBody.position.y*1000)/1000;
+        this.cannonBody.position.y = Math.round(this.cannonBody.position.y*100)/100;
 
         this.yawObject.position.copy(this.cannonBody.position);
     }

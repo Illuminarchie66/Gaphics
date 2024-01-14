@@ -84,14 +84,26 @@ class Demo {
         this.stoneTex1 = this.maker.loadMaterial('wall_stone_22', 'Wall_Stone_022_', 'jpg', 2, 2, 'standard');
 
         this.ropeTex1 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 4.9, 'phong');
+        this.ropeTex2 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 4.9, 3.5, 'phong');
+        this.ropeTex3 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 9.8, 'phong');
+        this.ropeTex4 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 5.145, 3.5, 'phong');
+        this.ropeTex5 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 7, 3.5, 'phong');
+        this.ropeTex6 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 3.85, 'phong');
+        this.ropeTex7 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 3.5, 3.5, 'phong');
+        this.ropeTex8 = this.maker.loadMaterial('ropetextures', 'Net_3_', 'png', 7, 0.525, 'phong');
 
         this.tilesTex1 = this.maker.loadMaterial('floor_tiles_06_4k', 'floor_tiles_06_','png', 50,50, 'standard');
         this.tilesTex2 = this.maker.loadMaterial('freepbr', 'vintage-tile1_', 'png', 1, 1.25,'standard');
 
         this.woodTex1 = this.maker.loadMaterial('wood_floor_worn_4k.blend', 'wood_floor_worn_', 'png', 8,6, 'standard');
 
-        this.foamTex1 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 1,1, 'standard');
+        this.foamTex1 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 6.5,1.4, 'standard');
         this.foamTex2 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 0.5,1, 'standard');
+        this.foamTex3 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 3.5,3, 'standard');
+        this.foamTex4 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 1,3, 'standard');
+        this.foamTex5 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 0.4,1.4, 'standard');
+        this.foamTex6 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 1,1.5, 'standard');
+        this.foamTex7 = this.maker.loadMaterial('fabric_padded', 'Fabric_Padded_Wall_001_', 'jpg', 2,0.8, 'standard');
     }
 
     initalizeBodyMats() {
@@ -113,14 +125,14 @@ class Demo {
             shape: playerShape,
             sleepSpeedLimit: 10,
         });
-        this.playerBody.position.set(0, 10, 0);
+        this.playerBody.position.set(10, 11.5, -12);
         this.playerBody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2);
         this.playerBody.angularFactor = new CANNON.Vec3(0,1,0);
         
         this.world.addBody(this.playerBody);
 
         this.playerControls = new Controls(this.camera, this.playerBody)
-        this.playerControls.getObject().position.set(0, 10, -60); 
+        this.playerControls.getObject().position.set(20, 2, -12); 
         this.scene.add(this.playerControls.getObject());
 
         const instructions = document.getElementById('instructions');
@@ -240,11 +252,50 @@ class Demo {
         // 0xffef0f  yellow
         // 0xff002f  red
 
-        const blocks = [];
-        const decor = [];
-
         // Plastic
+        this.makeBlocks();
+
+        // Ropes
+        this.makeRopeWalls();  
+        
+        // Foam 
+        this.makeFoamWalls1();
+
+        // Plastic wall
+        this.makePlasticWalls();
+
+        // Posts
+        this.makePosts();
+
+        // Tube
+        const tube = this.maker.makeTube(
+            new THREE.Vector3(-17.5,8.25+0.15,-21), 
+            12, 2, 
+            new THREE.Color(0x7816f7),
+            this.plasticTex3, 
+            this.wallMaterial
+        );
+        this.scene.add(tube[0]);
+        for (let i=0; i<4; i++) {
+            this.world.addBody(tube[1][i]);
+        }
+
+        // Flashlight
+        this.makeFlashlight();
+
+    }
+
+    makeBlocks() {
+        const blocks = [];
         let block = this.maker.makeTexturedBox(
+                new THREE.Vector3(20,1.25,-5),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox(
                 new THREE.Vector3(15,1.25,-5),
                 new THREE.Vector3(5,2,5),
                 new THREE.Color(0xff002f),
@@ -326,10 +377,254 @@ class Demo {
                 this.wallMaterial
         ); blocks.push(block);
 
-        // Ropes
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-17.5,7.25,-22),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0xff002f),
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-12.5,7.25,-22),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-7.5,7.25,-22),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0xff002f),
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-2.5,7.25,-22),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-7.5,7.25,-17),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0xff002f),
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-2.5,7.25,-17),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.leatherTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(6-2*Math.sin(Math.atan(6/12)),4.25,-22),
+                new THREE.Vector3(13.4164,2,5),
+                new THREE.Color(0x3d91ff),
+                this.leatherTex1,
+                this.wallMaterial
+        ); 
+        block[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), -Math.atan(5/10));
+        block[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), -Math.atan(5/10));
+        blocks.push(block);
+
+        block = this.maker.makeTexturedBox(
+                new THREE.Vector3(15,1.25,-22),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0xff002f),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(10,1.25,-22),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(10+5+5+2.5,0.35,-22+7.5-2.5),
+                new THREE.Vector3(10,0.2,15),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox(
+                new THREE.Vector3(15,1.25,-12),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0xff002f),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(10,1.25,-12),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(5+1.25,2.25,-12+1.25),
+                new THREE.Vector3(2.5,4,2.5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(5+1.25,3.25,-12-1.25),
+                new THREE.Vector3(2.5,6,2.5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(5-1.25,4.25,-12-1.25),
+                new THREE.Vector3(2.5,8,2.5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(5-1.25,5.25,-12+1.25),
+                new THREE.Vector3(2.5,10,2.5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(10,9.25,-12),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(15,9.25,-12),
+                new THREE.Vector3(5,2,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(2.5,9.25,-8.5),
+                new THREE.Vector3(30,2,2),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(-13.5, 11.25,-8.5),
+                new THREE.Vector3(2,4,2),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(15-5/3,10.75,-12),
+                new THREE.Vector3(5/3,1,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(15,11.25,-12),
+                new THREE.Vector3(5/3,2,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        block = this.maker.makeTexturedBox( 
+                new THREE.Vector3(15+5/3,11.75,-12),
+                new THREE.Vector3(5/3,3,5),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); blocks.push(block);
+
+        for (let i=0; i<3; i++) {
+            block = this.maker.makeTexturedBox( 
+                    new THREE.Vector3(20,12.5,-12-5*i),
+                    new THREE.Vector3(5,2,5),
+                    new THREE.Color(0x3d91ff),
+                    this.plasticTex1,
+                    this.wallMaterial
+            ); blocks.push(block);
+
+            block = this.maker.makeTexturedBox( 
+                    new THREE.Vector3(25,12.5,-12-5*i),
+                    new THREE.Vector3(5,2,5),
+                    new THREE.Color(0x3d91ff),
+                    this.plasticTex1,
+                    this.wallMaterial
+            ); blocks.push(block);
+        }
+
+
+
+        for (let i=0; i<blocks.length; i++) {
+            this.scene.add(blocks[i][0]);
+            this.world.addBody(blocks[i][1]);
+        }
+    }
+
+    makeRopeWalls() {
+        const blocks = [];
 
         let ropewall = this.maker.makeRopeWall(
                 new THREE.Vector3(5, 4.25, -2.49),
+                new THREE.Vector2(5,8),
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(15, 4.25, -2.49),
+                new THREE.Vector2(5,8),
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(20, 4.25, -2.49),
+                new THREE.Vector2(5,8),
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(20+2.51, 4.25, -5),
+                new THREE.Vector2(5,8),
+                this.ropeTex1,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+        ropewall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(20, 4.25, -7.51),
                 new THREE.Vector2(5,8),
                 this.ropeTex1,
                 this.wallMaterial
@@ -355,59 +650,145 @@ class Demo {
                 this.ropeTex1,
                 this.wallMaterial
         ); blocks.push(ropewall);
-        
-        // Foam 
 
-        let foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(0, 4.75, -7.5),
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(-16.35, 4.25+4+2.5, -2.49),
+                new THREE.Vector2(7.35,5),
+                this.ropeTex4,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(5, 7.25, -14.5),
+                new THREE.Vector2(5,14),
+                this.ropeTex3,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(2.5, 7.25, -12),
+                new THREE.Vector2(5,14),
+                this.ropeTex3,
+                this.wallMaterial
+        ); 
+        ropewall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        blocks.push(ropewall);
+
+        for (let i=0; i<3; i++) {
+            ropewall = this.maker.makeRopeWall(
+                    new THREE.Vector3(-20.01, 4.25+4+2.5, -5-i*5),
+                    new THREE.Vector2(5,5),
+                    this.ropeTex1,
+                    this.wallMaterial
+            ); blocks.push(ropewall);
+            ropewall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+            ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        }
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(-20.01, 4.25+4+2.5, -21),
+                new THREE.Vector2(7,5),
+                this.ropeTex2,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+        ropewall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+
+        for (let i=0; i<8; i++) {
+            ropewall = this.maker.makeRopeWall(
+                    new THREE.Vector3(-17.5+5*i, 4.25+4+2.5, -24.51),
+                    new THREE.Vector2(5,5),
+                    this.ropeTex1,
+                    this.wallMaterial
+            ); blocks.push(ropewall);
+            ropewall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+            ropewall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+        }
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(12.5, 11.75, -9.49),
+                new THREE.Vector2(10,5),
+                this.ropeTex5,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeTriangleWall(
+                new THREE.Vector3(12.5, 11.75+2.5, -9.49),
+                5,
+                [
+                    new THREE.Vector3(-1, 0, 0),
+                    new THREE.Vector3(1, 0, 0),
+                    new THREE.Vector3(1, 1, 0)
+                ],
+                this.ropeTex5,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeTriangleWall(
+                new THREE.Vector3(12.5, 11.75+2.5, -14.51),
+                5,
+                [
+                    new THREE.Vector3(-1, 0, 0),
+                    new THREE.Vector3(1, 0, 0),
+                    new THREE.Vector3(1, 1, 0)
+                ],
+                this.ropeTex5,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        for (let i=0; i<2; i++) {
+            ropewall = this.maker.makeRopeWall(
+                    new THREE.Vector3(20+i*5, 16.25, -9.5),
+                    new THREE.Vector2(5,5.5),
+                    this.ropeTex6,
+                    this.wallMaterial
+            ); blocks.push(ropewall);
+
+            ropewall = this.maker.makeRopeWall(
+                    new THREE.Vector3(20+i*5, 16.25, -24.5),
+                    new THREE.Vector2(5,5.5),
+                    this.ropeTex6,
+                    this.wallMaterial
+            ); blocks.push(ropewall);
+        }
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(5, 11.75, -12+2.51),
                 new THREE.Vector2(5,5),
+                this.ropeTex7,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        ropewall = this.maker.makeRopeWall(
+                new THREE.Vector3(12.5, 13.875, -14.51),
+                new THREE.Vector2(10,0.75),
+                this.ropeTex8,
+                this.wallMaterial
+        ); blocks.push(ropewall);
+
+        for (let i=0; i<blocks.length; i++) {
+            this.scene.add(blocks[i][0]);
+            this.world.addBody(blocks[i][1]);
+        }
+    }
+
+    makeFoamWalls1() {
+        let foamWall;
+        const blocks = [];
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(1.25, 4.75, -7.499),
+                new THREE.Vector2(32.5,7),
                 new THREE.Color(0xe8da1a),
                 this.foamTex1,
                 this.wallMaterial
-        ); blocks.push(foamWall);
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI);
+        blocks.push(foamWall);
 
         foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(5, 4.75, -7.5),
-                new THREE.Vector2(5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex1,
-                this.wallMaterial
-        ); blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(10, 4.75, -7.5),
-                new THREE.Vector2(5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex1,
-                this.wallMaterial
-        ); blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(15, 4.75, -7.5),
-                new THREE.Vector2(5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex1,
-                this.wallMaterial
-        ); blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(-5, 4.75, -7.5),
-                new THREE.Vector2(5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex1,
-                this.wallMaterial
-        ); blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(-10, 4.75, -7.5),
-                new THREE.Vector2(5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex1,
-                this.wallMaterial
-        ); blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(-15+1.25, 4.75, -7.5),
+                new THREE.Vector3(-13.75, 4.75+6, -7.499),
                 new THREE.Vector2(2.5,5),
                 new THREE.Color(0xe8da1a),
                 this.foamTex2,
@@ -415,27 +796,9 @@ class Demo {
         ); 
         foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI);
         blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(-15+1.25, 4.75+5, -7.5),
-                new THREE.Vector2(2.5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex2,
-                this.wallMaterial
-        ); 
-        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI);
-        blocks.push(foamWall);
-
-        foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(-10, 4.75+5, -7.5),
-                new THREE.Vector2(5,5),
-                new THREE.Color(0xe8da1a),
-                this.foamTex1,
-                this.wallMaterial
-        ); blocks.push(foamWall);
         
         foamWall = this.maker.makeFoamWall(
-                new THREE.Vector3(-15, 4.75+5, -8.75),
+                new THREE.Vector3(-14.99, 4.75+6, -8.75),
                 new THREE.Vector2(2.5,5),
                 new THREE.Color(0xe8da1a),
                 this.foamTex2,
@@ -445,7 +808,164 @@ class Demo {
         foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
         blocks.push(foamWall);
 
-        // Plastic wall
+        foamWall = this.maker.makePlasticWall(
+                new THREE.Vector3(-15, 6.75, -15+0.5),
+                new THREE.Vector2(10,13),
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        blocks.push(foamWall);
+        
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(8.75, 6, -19.499),
+                new THREE.Vector2(17.5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex3,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(17.499, 6, -17),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(0.01, 6, -17),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(-2.5, 6, -14.499),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(-7.5, 6, -14.499),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(7.5, 6, -17),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(-10.01, 6, -17),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(-12.5, 6, -19.499),
+                new THREE.Vector2(5,15),
+                new THREE.Color(0xe8da1a),
+                this.foamTex4,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+        blocks.push(foamWall);
+
+        for (let i=0; i<7; i++) {
+            foamWall = this.maker.makeFoamWall(
+                    new THREE.Vector3(15-5*i, 4.75, -9.499),
+                    new THREE.Vector2(5,7),
+                    new THREE.Color(0xe8da1a),
+                    this.foamTex6,
+                    this.wallMaterial
+            ); 
+            foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+            foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+            blocks.push(foamWall);
+        }
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(10, 4.75, -9.499-5),
+                new THREE.Vector2(5,7),
+                new THREE.Color(0xe8da1a),
+                this.foamTex6,
+                this.wallMaterial
+        ); 
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(15, 4.75, -9.499-5),
+                new THREE.Vector2(5,7),
+                new THREE.Color(0xe8da1a),
+                this.foamTex6,
+                this.wallMaterial
+        ); 
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(17.5, 3.75, -8.5),
+                new THREE.Vector2(2, 9),
+                new THREE.Color(0xe8da1a),
+                this.foamTex5,
+                this.wallMaterial
+        ); 
+        foamWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        foamWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        blocks.push(foamWall);
+
+        foamWall = this.maker.makeFoamWall(
+                new THREE.Vector3(12.5, 11.5, -14.51),
+                new THREE.Vector2(10, 4),
+                new THREE.Color(0xe8da1a),
+                this.foamTex7,
+                this.wallMaterial
+        ); 
+        blocks.push(foamWall);
+
+        for (let i=0; i<blocks.length; i++) {
+            this.scene.add(blocks[i][0]);
+            this.world.addBody(blocks[i][1]);
+        }
+    }
+
+    makePlasticWalls() {
+        const blocks = [];
         let plasticWall = this.maker.makePlasticWall(
                 new THREE.Vector3(-16.35, 4.25, -2.475),
                 new THREE.Vector2(7.35,8),
@@ -476,7 +996,79 @@ class Demo {
         plasticWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
         blocks.push(plasticWall);
 
-        // Posts
+        plasticWall = this.maker.makePlasticWall(
+                new THREE.Vector3(-20.025, 4.25, -15),
+                new THREE.Vector2(5,8),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); 
+        plasticWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        plasticWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        blocks.push(plasticWall);
+
+        plasticWall = this.maker.makePlasticWall(
+                new THREE.Vector3(-20.025, 4.25, -21),
+                new THREE.Vector2(7,8),
+                new THREE.Color(0x3d91ff),
+                this.plasticTex1,
+                this.wallMaterial
+        ); 
+        plasticWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        plasticWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI/2);
+        blocks.push(plasticWall);
+        
+        for (let i=0; i<8; i++) {
+            plasticWall = this.maker.makePlasticWall(
+                    new THREE.Vector3(-17.5+i*5, 4.25, -19.525-5),
+                    new THREE.Vector2(5,8),
+                    new THREE.Color(0xff002f),
+                    this.plasticTex1,
+                    this.wallMaterial
+            );
+            plasticWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+            plasticWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -Math.PI);
+            blocks.push(plasticWall);
+        }
+
+        plasticWall = this.maker.makePlasticWall(
+                new THREE.Vector3(22.5, 0.25+1.25, -17+7.5+0.015),
+                new THREE.Vector2(10,2.5),
+                new THREE.Color(0xff002f),
+                this.plasticTex1,
+                this.wallMaterial
+        );
+        blocks.push(plasticWall);
+
+        plasticWall = this.maker.makePlasticWall(
+                new THREE.Vector3(22.5+5+0.015, 0.25+1.25, -17),
+                new THREE.Vector2(15,2.5),
+                new THREE.Color(0xff002f),
+                this.plasticTex1,
+                this.wallMaterial
+        );
+        plasticWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        plasticWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/2);
+        blocks.push(plasticWall);
+
+        plasticWall = this.maker.makePlasticWall(
+                new THREE.Vector3(22.5+1.25, 0.25+1.25, -17-7.5-0.015),
+                new THREE.Vector2(7.5,2.5),
+                new THREE.Color(0xff002f),
+                this.plasticTex1,
+                this.wallMaterial
+        );
+        plasticWall[0].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        plasticWall[1].quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI);
+        blocks.push(plasticWall);
+
+        for (let i=0; i<blocks.length; i++) {
+            this.scene.add(blocks[i][0]);
+            this.world.addBody(blocks[i][1]);
+        }
+    }
+
+    makePosts() {
         let post = this.maker.makeCylinder(
                 new THREE.Vector3(12.5,4.25,-2.5),
                 8, 0.2, 
@@ -499,35 +1091,281 @@ class Demo {
         ); this.scene.add(post);
 
         post = this.maker.makeCylinder(
-                new THREE.Vector3(-12.5,4.25,-2.5),
+                new THREE.Vector3(-12.5,6.75,-2.5),
+                13, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-12.5,6.75,-2.5-5),
+                13, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-20,6.75,-2.5),
+                13, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        for (let i=0; i<5; i++) {
+            post = this.maker.makeCylinder(
+                    new THREE.Vector3(-20+i*10,9.75,-24.5),
+                    19, 0.2, 
+                    new THREE.Color(0xe8da1a),
+                    this.plasticTex1
+            ); this.scene.add(post);
+        }
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(22.5,4.25,-2.5),
                 8, 0.2, 
                 new THREE.Color(0xe8da1a),
                 this.plasticTex1
         ); this.scene.add(post);
 
-        for (let i=0; i<blocks.length; i++) {
-            this.scene.add(blocks[i][0]);
-            this.world.addBody(blocks[i][1]);
-        }
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(22.5,4.25,-7.5),
+                8, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
 
-        // Tube
-        const tube = this.maker.makeTube(
-            new THREE.Vector3(-17.5,8.25+0.01,-21), 
-            12, 2, 
-            new THREE.Color(0x7816f7),
-            this.plasticTex3, 
-            this.wallMaterial
-        );
-        this.scene.add(tube[0]);
-        for (let i=0; i<4; i++) {
-            this.world.addBody(tube[1][i]);
-        }
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(17.5,4.25,-7.5),
+                8, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
 
-        //other thing
-        this.makeBox();
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5+2.5,7.25,-12+2.5),
+                14, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
 
-        // Flashlight
-        this.makeFlashlight();
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5-2.5,7.25,-12+2.5),
+                14, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5+2.5,7.25,-12-2.5),
+                14, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5-2.5,7.25,-12-2.5),
+                14, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(27.5,9.75,-9.5),
+                19, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(27.5,9.75,-24.5),
+                19, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(17.5,14.25,-9.5),
+                10, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(17.5,14.25,-14.5),
+                10, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5,14.25,-12+2.5),
+                5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5,14.25,-12-2.5),
+                5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5-2.5,14.25,-12),
+                5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(12.5,16.75,-12+2.5),
+                5*Math.sqrt(5), 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), -Math.atan(10/5));
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(12.5,16.75,-12-2.5),
+                5*Math.sqrt(5), 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), -Math.atan(10/5));
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(27.5,15+1.25,-17),
+                5.5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(10,8.25,-5+2.5),
+                25, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(5,8.25,-5-2.5),
+                35, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(20+2.5,8.25,-5),
+                5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-7.5,10.5+0.25,-5+2.5),
+                5*Math.sqrt(5), 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.atan(10/5));
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-7.5,10.5+0.25,-5-2.5),
+                5*Math.sqrt(5), 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.atan(10/5));
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-20,13.25,-13.5),
+                17+5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(3.75,13.25,-24.5),
+                47.5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(3.75,13.25+6,-24.5),
+                47.5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-16.25,13.25,-2.5),
+                7.5, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(-20,16.25,-13.5),
+                2*Math.sqrt(130), 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.atan(22/6));
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(27.5,13.25+6,-17),
+                15, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(17.5,13.25+6,-17),
+                15, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2);
+        this.scene.add(post);
+
+        post = this.maker.makeCylinder(
+                new THREE.Vector3(22.5,13.25+6,-9.5),
+                10, 0.2, 
+                new THREE.Color(0xe8da1a),
+                this.plasticTex1
+        ); 
+        post.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
+        this.scene.add(post);
+
 
     }
 
@@ -570,75 +1408,6 @@ class Demo {
             {friction: 0, restitution: 0}
         );
         this.world.addContactMaterial(groundPlayerContactMat);
-    }
-
-    connect(i1, j1, i2, j2, dist) {
-        this.world.addConstraint(new CANNON.DistanceConstraint(
-            this.particles[i1][j1],
-            this.particles[i2][j2],
-            dist
-        ));
-    }
-
-    makeStretch() {
-        const Nx = 15;
-        const Ny = 15;
-        const mass = 1;
-        const clothSize = 5;
-        const dist = clothSize / Nx;
-
-        const shape = new CANNON.Particle();
-
-        this.particles = [];
-
-        for(let i = 0; i < Nx + 1; i++) {
-            this.particles.push([]);
-            for(let j = 0; j < Ny + 1; j++) {
-                const particle = new CANNON.Body({
-                    mass: j=== Ny ? 0 : mass,
-                    shape,
-                    position: new CANNON.Vec3((i - Nx * 0.5) * dist, (j - Ny * 0.5) * dist + 5, 0),
-                    velocity: new CANNON.Vec3(0, 0, -0.1 * (Ny - j))
-                });
-                this.particles[i].push(particle);
-                this.world.addBody(particle);
-            }
-        }
-
-
-        for(let i = 0; i < Nx + 1; i++) {
-            for(let j = 0; j < Ny + 1; j++) {
-                if(i < Nx)
-                    this.connect(i, j, i + 1, j, dist);
-                if(j < Ny)
-                    this.connect(i, j, i, j + 1, dist);
-            }
-        }
-
-        const clothGeometry = new THREE.PlaneGeometry(1, 1, Nx, Ny);
-
-        const clothMat = this.ropeTex1.clone();
-        clothMat.transparent = true;
-        clothMat.side = THREE.DoubleSide;
-
-        this.clothMesh = new THREE.Mesh(clothGeometry, clothMat);
-        this.scene.add(this.clothMesh);
-    }
-
-    updateParticules() {
-        for(let i = 0; i < 15 + 1; i++) {
-            for(let j = 0; j < 15 + 1; j++) {
-                const index = j * (15 + 1) + i;
-    
-                const positionAttribute = this.clothMesh.geometry.attributes.position;
-    
-                const position = this.particles[i][15 - j].position;
-    
-                positionAttribute.setXYZ(index, position.x, position.y, position.z);
-    
-                positionAttribute.needsUpdate = true;
-            }
-        }
     }
 
     makeBox() {
@@ -717,65 +1486,6 @@ class Demo {
         
     }
 
-    makeTubes() {
-        const path = new THREE.LineCurve3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 10));
-
-        // Define the radius and segments for the tube
-        const tubeRadius = 2;
-        const tubeSegments = 10;
-
-        // Create the TubeGeometry
-        const tubeGeometry = new THREE.TubeGeometry(path, tubeSegments, tubeRadius);
-
-        // Create a material (e.g., MeshBasicMaterial) for the tube
-        const material = this.plasticTex2.clone();
-        material.side = THREE.DoubleSide;
-        material.color.set(new THREE.Color(0x7816f7));
-
-        // Create the tube mesh
-        const horiLength = tubeRadius*Math.sin(3*Math.PI/8);
-        const tubeMesh = new THREE.Mesh(tubeGeometry, material);
-        tubeMesh.position.set(-17.5,8.25+horiLength+0.01,-17.5-3.5);
-
-        tubeMesh.quaternion.setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI/8);
-        const pos = new THREE.Vector3(-17.5,8.25+horiLength+0.01,-21);
-        this.scene.add(tubeMesh);
-
-        const body = [];
-        let tubeBody
-        tubeBody = new CANNON.Body({
-            shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.1, 5)),
-            mass: 0,
-            position: new CANNON.Vec3(pos.x, pos.y-horiLength-0.05, pos.z+5),
-            material: this.wallMaterial,
-        });
-        this.world.addBody(tubeBody);
-
-        tubeBody = new CANNON.Body({
-            shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.1, 5)),
-            mass: 0,
-            position: new CANNON.Vec3(pos.x, pos.y+horiLength+0.05, pos.z+5),
-            material: this.wallMaterial,
-        });
-        this.world.addBody(tubeBody);
-
-        tubeBody = new CANNON.Body({
-            shape: new CANNON.Box(new CANNON.Vec3(0.2, 0.5, 5)),
-            mass: 0,
-            position: new CANNON.Vec3(pos.x+horiLength, pos.y, pos.z+5),
-            material: this.wallMaterial,
-        });
-        this.world.addBody(tubeBody);
-
-        tubeBody = new CANNON.Body({
-            shape: new CANNON.Box(new CANNON.Vec3(0.2, 0.5, 5)),
-            mass: 0,
-            position: new CANNON.Vec3(pos.x-horiLength, pos.y, pos.z+5),
-            material: this.wallMaterial,
-        });
-        this.world.addBody(tubeBody);
-    }
-
     onWindowResize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
@@ -790,13 +1500,15 @@ class Demo {
         const delta = 1/60; 
          
         this.world.step(delta);
+
+        console.log(this.playerBody.position);
         
         //Merging the mesh and the physics
         // this.planeMesh.position.copy(this.planeBody.position);
         // this.planeMesh.quaternion.copy(this.planeBody.quaternion);
 
-        this.boxMesh.position.copy(this.boxBody.position);
-        this.boxMesh.quaternion.copy(this.boxBody.quaternion);
+        // this.boxMesh.position.copy(this.boxBody.position);
+        // this.boxMesh.quaternion.copy(this.boxBody.quaternion);
 
         //Updating entities
         this.playerControls.update(delta);
